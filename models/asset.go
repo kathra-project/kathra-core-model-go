@@ -6,11 +6,8 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"strconv"
-
-	strfmt "github.com/go-openapi/strfmt"
-
 	"github.com/go-openapi/errors"
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
 
@@ -21,9 +18,6 @@ type Asset struct {
 
 	// binary repository
 	BinaryRepository *BinaryRepository `json:"binaryRepository,omitempty"`
-
-	// catalog entries
-	CatalogEntries []*CatalogEntry `json:"catalogEntries"`
 
 	// pipeline
 	Pipeline *Pipeline `json:"pipeline,omitempty"`
@@ -45,8 +39,6 @@ func (m *Asset) UnmarshalJSON(raw []byte) error {
 	var dataAO1 struct {
 		BinaryRepository *BinaryRepository `json:"binaryRepository,omitempty"`
 
-		CatalogEntries []*CatalogEntry `json:"catalogEntries"`
-
 		Pipeline *Pipeline `json:"pipeline,omitempty"`
 
 		SourceRepository *SourceRepository `json:"sourceRepository,omitempty"`
@@ -56,8 +48,6 @@ func (m *Asset) UnmarshalJSON(raw []byte) error {
 	}
 
 	m.BinaryRepository = dataAO1.BinaryRepository
-
-	m.CatalogEntries = dataAO1.CatalogEntries
 
 	m.Pipeline = dataAO1.Pipeline
 
@@ -79,16 +69,12 @@ func (m Asset) MarshalJSON() ([]byte, error) {
 	var dataAO1 struct {
 		BinaryRepository *BinaryRepository `json:"binaryRepository,omitempty"`
 
-		CatalogEntries []*CatalogEntry `json:"catalogEntries"`
-
 		Pipeline *Pipeline `json:"pipeline,omitempty"`
 
 		SourceRepository *SourceRepository `json:"sourceRepository,omitempty"`
 	}
 
 	dataAO1.BinaryRepository = m.BinaryRepository
-
-	dataAO1.CatalogEntries = m.CatalogEntries
 
 	dataAO1.Pipeline = m.Pipeline
 
@@ -113,10 +99,6 @@ func (m *Asset) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateBinaryRepository(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateCatalogEntries(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -147,31 +129,6 @@ func (m *Asset) validateBinaryRepository(formats strfmt.Registry) error {
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *Asset) validateCatalogEntries(formats strfmt.Registry) error {
-
-	if swag.IsZero(m.CatalogEntries) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.CatalogEntries); i++ {
-		if swag.IsZero(m.CatalogEntries[i]) { // not required
-			continue
-		}
-
-		if m.CatalogEntries[i] != nil {
-			if err := m.CatalogEntries[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("catalogEntries" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
 	}
 
 	return nil
