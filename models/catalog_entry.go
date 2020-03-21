@@ -8,9 +8,8 @@ package models
 import (
 	"strconv"
 
-	strfmt "github.com/go-openapi/strfmt"
-
 	"github.com/go-openapi/errors"
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
 
@@ -21,6 +20,9 @@ type CatalogEntry struct {
 
 	// Description
 	Description string `json:"description,omitempty"`
+
+	// Icon's URL
+	Icon string `json:"icon,omitempty"`
 
 	// package template
 	// Enum: [REST_SERVICE]
@@ -43,6 +45,8 @@ func (m *CatalogEntry) UnmarshalJSON(raw []byte) error {
 	var dataAO1 struct {
 		Description string `json:"description,omitempty"`
 
+		Icon string `json:"icon,omitempty"`
+
 		PackageTemplate interface{} `json:"packageTemplate,omitempty"`
 
 		Packages []*CatalogEntryPackage `json:"packages"`
@@ -52,6 +56,8 @@ func (m *CatalogEntry) UnmarshalJSON(raw []byte) error {
 	}
 
 	m.Description = dataAO1.Description
+
+	m.Icon = dataAO1.Icon
 
 	m.PackageTemplate = dataAO1.PackageTemplate
 
@@ -73,12 +79,16 @@ func (m CatalogEntry) MarshalJSON() ([]byte, error) {
 	var dataAO1 struct {
 		Description string `json:"description,omitempty"`
 
+		Icon string `json:"icon,omitempty"`
+
 		PackageTemplate interface{} `json:"packageTemplate,omitempty"`
 
 		Packages []*CatalogEntryPackage `json:"packages"`
 	}
 
 	dataAO1.Description = m.Description
+
+	dataAO1.Icon = m.Icon
 
 	dataAO1.PackageTemplate = m.PackageTemplate
 

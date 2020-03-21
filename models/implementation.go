@@ -8,9 +8,8 @@ package models
 import (
 	"strconv"
 
-	strfmt "github.com/go-openapi/strfmt"
-
 	"github.com/go-openapi/errors"
+	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
 
@@ -18,6 +17,9 @@ import (
 // swagger:model Implementation
 type Implementation struct {
 	Asset
+
+	// catalog entries
+	CatalogEntries []*CatalogEntry `json:"catalogEntries"`
 
 	// component
 	Component *Component `json:"component,omitempty"`
@@ -47,6 +49,8 @@ func (m *Implementation) UnmarshalJSON(raw []byte) error {
 
 	// AO1
 	var dataAO1 struct {
+		CatalogEntries []*CatalogEntry `json:"catalogEntries"`
+
 		Component *Component `json:"component,omitempty"`
 
 		Description string `json:"description,omitempty"`
@@ -60,6 +64,8 @@ func (m *Implementation) UnmarshalJSON(raw []byte) error {
 	if err := swag.ReadJSON(raw, &dataAO1); err != nil {
 		return err
 	}
+
+	m.CatalogEntries = dataAO1.CatalogEntries
 
 	m.Component = dataAO1.Component
 
@@ -85,6 +91,8 @@ func (m Implementation) MarshalJSON() ([]byte, error) {
 	_parts = append(_parts, aO0)
 
 	var dataAO1 struct {
+		CatalogEntries []*CatalogEntry `json:"catalogEntries"`
+
 		Component *Component `json:"component,omitempty"`
 
 		Description string `json:"description,omitempty"`
@@ -95,6 +103,8 @@ func (m Implementation) MarshalJSON() ([]byte, error) {
 
 		Versions []*ImplementationVersion `json:"versions"`
 	}
+
+	dataAO1.CatalogEntries = m.CatalogEntries
 
 	dataAO1.Component = m.Component
 
@@ -124,6 +134,10 @@ func (m *Implementation) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCatalogEntries(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateComponent(formats); err != nil {
 		res = append(res, err)
 	}
@@ -135,6 +149,31 @@ func (m *Implementation) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *Implementation) validateCatalogEntries(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.CatalogEntries) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.CatalogEntries); i++ {
+		if swag.IsZero(m.CatalogEntries[i]) { // not required
+			continue
+		}
+
+		if m.CatalogEntries[i] != nil {
+			if err := m.CatalogEntries[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("catalogEntries" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 
